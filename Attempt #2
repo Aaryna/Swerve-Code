@@ -1,1 +1,81 @@
 # Swerve-Code
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.swervelib.*;
+
+import java.util.HashMap;
+
+public class SwerveDrive extends OpMode {
+
+    // Declare Swerve Drive Module Objects
+    private SwerveR swerveRF;
+    private SwerveR swerveLF;
+    private SwerveR swerveLB;
+    private SwerveR swerveRB;
+
+    // Declare HashMap to hold location values for each module
+    private HashMap<String, Double> swerveRFLocation = new HashMap<>();
+    private HashMap<String, Double> swerveLFLocation = new HashMap<>();
+    private HashMap<String, Double> swerveLBLocation = new HashMap<>();
+    private HashMap<String, Double> swerveRBLocation = new HashMap<>();
+
+    // Declare variables for gamepad inputs
+    private double driveX;
+    private double driveY;
+    private double rotation;
+
+    // Declare variables for telemetry
+    private ElapsedTime runtime = new ElapsedTime();
+    private Telemetry telemetry;
+
+    @Override
+    public void init() {
+        // Initialize the swerve drive modules
+        swerveRF = new SwerveR(hardwareMap, "rf");
+        swerveLF = new SwerveR(hardwareMap, "lf");
+        swerveLB = new SwerveR(hardwareMap, "lb");
+        swerveRB = new SwerveR(hardwareMap, "rb");
+
+        // Set location values for each module using HashMap
+        swerveRFLocation.put("x", 10.0);
+        swerveRFLocation.put("y", 10.0);
+        swerveRFLocation.put("z", 0.0);
+        swerveRF.setModuleLocation(swerveRFLocation);
+
+        swerveLFLocation.put("x", -10.0);
+        swerveLFLocation.put("y", 10.0);
+        swerveLFLocation.put("z", 0.0);
+        swerveLF.setModuleLocation(swerveLFLocation);
+
+        swerveLBLocation.put("x", -10.0);
+        swerveLBLocation.put("y", -10.0);
+        swerveLBLocation.put("z", 0.0);
+        swerveLB.setModuleLocation(swerveLBLocation);
+
+        swerveRBLocation.put("x", 10.0);
+        swerveRBLocation.put("y", -10.0);
+        swerveRBLocation.put("z", 0.0);
+        swerveRB.setModuleLocation(swerveRBLocation);
+
+        telemetry = getTelemetry();
+    }
+
+    @Override
+    public void loop() {
+        // Read gamepad inputs
+        driveX = gamepad1.left_stick_x;
+        driveY = -gamepad1.left_stick_y; // negative to invert Y axis
+        rotation = gamepad1.right_stick_x;
+
+        // Calculate wheel speeds and angles based on gamepad inputs
+        double[] speeds = SwerveUtils.calculateSpeeds(driveX, driveY, rotation);
+        double[] angles = SwerveUtils.calculateAngles(driveX, driveY,
